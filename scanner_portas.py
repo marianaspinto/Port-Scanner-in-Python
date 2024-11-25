@@ -55,9 +55,11 @@ def escanear_porta_udp(ip, porta):
 
 # Função principal para iniciar o escaneamento com threads
 def iniciar_escaneamento_com_threads(ip, protocolo, inicio, fim):
+     total_portas = fim - inicio +1
+     portas_escaneadas = 0
      threads = []
      for porta in range(inicio, fim + 1):
-# Adicionar um delay de 0.1 segundos entre cada tentativa
+         # Adicionar um delay de 0.1 segundos entre cada tentativa
          time.sleep(0.1)
          if protocolo == "TCP":
             thread = threading.Thread(target=escanear_porta_tcp, args=(ip, porta))
@@ -65,6 +67,10 @@ def iniciar_escaneamento_com_threads(ip, protocolo, inicio, fim):
               thread = threading.Thread(target=escanear_porta_udp,args=(ip, porta))
          threads.append(thread) # Adiciona a thread à lista
          thread.start() # Inicia a thread
+
+         # Atualiza o progresso
+         portas_escaneadas += 1
+         print(f"Progresso: {portas_escaneadas}/{total_portas} portas escaneadas")
 
 # Aguardar todas as threads terminarem
      for thread in threads:
