@@ -3,6 +3,7 @@
 import socket
 import threading # Torna o escaneamento mais rápido
 import time # Adicionar um delay para evitar sobrecarregamento a rede
+import logging # Registra os resultados em um arquivo log
 
 # Solicitar IP ou Domínio que deseja escanear.
 alvo = input("Digite o endereço IP ou domínio para escanear.")
@@ -19,6 +20,10 @@ if protocolo not in ["TCP", "UDP"]:
 inicio_de_porta = int(input("Digite o número da porta incial."))
 fim_de_porta = int(input("Digite o núemro da porta final."))
 
+# Configurar o logger
+logging.basicConfig(filename='escaneamento.log', level=logging.INFO,
+                    format='%a(asctime)s - %(levelname)s - %(message)s')
+
 # Criando a função de escaneamento de portas para TCP
 def escanear_porta_tcp(ip, porta):
     try:
@@ -32,11 +37,10 @@ def escanear_porta_tcp(ip, porta):
 
         if resultado == 0:
             print(f"Porta TCP {porta} está aberta.")
-        else:
-            print(f"Porta TCP {porta} está fechada.")
+            logging.info(f"Porta TCP {porta} aberta em {ip}")
         sock.close()
     except socket.error as erro:
-        print(f"Erro no TCP: {erro}")
+        logging.error(f"Erro no TCP para porta {porta} em {ip}: {erro}")
 
 
 # Criando a função de escaneamento de portas para UDP
@@ -47,11 +51,12 @@ def escanear_porta_udp(ip, porta):
         sock.sendto(b"Teste", (ip, porta))
         resposta, _ = sock.recvfrom(1024)
         print(f"Porta UDP {porta} está aberta. Resposta: {resposta}")
+        logging.info(f"Porta UDP {porta} aberta em {ip}, resposta: {resposta}")
         sock.close()
     except socket.timeout:
-        print(f"Porta UDP {porta} não respondeu (pode estar fechada).")
+        logging.warning(f"Porta UDP {porta} não respondeu em {ip} (pode estar fechada).")
     except socket.error as erro:
-        print(f"Erro no UDP:{erro}")
+        logging.error(f"Erro no UDP para porta {porta} em {ip}: {erro}")
 
 # Função principal para iniciar o escaneamento com threads
 def iniciar_escaneamento_com_threads(ip, protocolo, inicio, fim):
