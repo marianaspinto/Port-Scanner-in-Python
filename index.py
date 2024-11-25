@@ -27,4 +27,9 @@ def escanear_porta(ip, porta):
     except KeyboardInterrupt:
         print("\nEscaneamento interrompido pelo usuário.")
         exit()
-# 
+
+# Usar a função "escanear_porta()" em um loop para verificar todas as
+# portas dentro da faixa definida
+print(f"\nIniciando escaneamento do alvo: {alvo}\n")
+for porta in range(inicio_de_porta, fim_de_porta + 1):
+        escanear_porta(alvo, porta)
