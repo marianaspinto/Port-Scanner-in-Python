@@ -2,6 +2,7 @@
 # que são essenciais para escanear portas em um endereço IP ou Domínio.
 import socket
 import threading # Torna o escaneamento mais rápido
+import time # Adicionar um delay para evitar sobrecarregamento a rede
 
 # Solicitar IP ou Domínio que deseja escanear.
 alvo = input("Digite o endereço IP ou domínio para escanear.")
@@ -56,12 +57,14 @@ def escanear_porta_udp(ip, porta):
 def iniciar_escaneamento_com_threads(ip, protocolo, inicio, fim):
      threads = []
      for porta in range(inicio, fim + 1):
-          if protocolo == "TCP":
+# Adicionar um delay de 0.1 segundos entre cada tentativa
+         time.sleep(0.1)
+         if protocolo == "TCP":
             thread = threading.Thread(target=escanear_porta_tcp, args=(ip, porta))
-          elif protocolo == "UDP":
+         elif protocolo == "UDP":
               thread = threading.Thread(target=escanear_porta_udp,args=(ip, porta))
-          threads.append(thread) # Adiciona a thread à lista
-          thread.start() # Inicia a thread
+         threads.append(thread) # Adiciona a thread à lista
+         thread.start() # Inicia a thread
 
 # Aguardar todas as threads terminarem
      for thread in threads:
